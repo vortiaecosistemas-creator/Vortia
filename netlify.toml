@@ -1,9 +1,25 @@
 [build]
   command = "npm install --legacy-peer-deps && npm run build"
   publish = ".next"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/api/v1/heygen"
+  to = "/.netlify/functions/heygen"
+  status = 200
+
+[[redirects]]
+  from = "/api/v1/generate"
+  to = "/.netlify/functions/generate"
+  status = 200
+
+[[redirects]]
+  from = "/api/v1/automation"
+  to = "/.netlify/functions/automation"
+  status = 200
