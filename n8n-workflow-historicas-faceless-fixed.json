@@ -1,0 +1,403 @@
+{
+  "name": "CANAL NOTICIAS HISTORICAS FACELESS (CORREGIDO)",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "={{ $('Prepare for Publish').item.json.blotato_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $('Get Video').item.json.item.mediaUrl }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3696, -1104],
+      "id": "upload-blotato",
+      "name": "Upload to Blotato"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "={{ $('Prepare for Publish').item.json.blotato_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"instagram\"\n    },\n    \"content\": {\n      \"text\": {{ $('Prepare for Publish').item.json.final_text_long.toJsonString() }},\n      \"platform\": \"instagram\",\n      \"mediaUrls\": [\"{{ $json.url }}\"]\n    },\n    \"accountId\": \"{{ $('Prepare for Publish').item.json.instagram_id }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3472, -1456],
+      "id": "publish-instagram",
+      "name": "[Instagram] Publish via Blotato"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "={{ $('Prepare for Publish').item.json.blotato_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"facebook\",\n      \"pageId\": \"{{ $('Prepare for Publish').item.json.facebook_page_id }}\"\n    },\n    \"content\": {\n      \"text\": {{ $('Prepare for Publish').item.json.final_text_long.toJsonString() }},\n      \"platform\": \"facebook\",\n      \"mediaUrls\": [\"{{ $json.url }}\"]\n    },\n    \"accountId\": \"{{ $('Prepare for Publish').item.json.facebook_id }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3472, -1088],
+      "id": "publish-facebook",
+      "name": "[Facebook] Publish via Blotato"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "={{ $('Prepare for Publish').item.json.blotato_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"tiktok\",\n      \"isYourBrand\": false,\n      \"disabledDuet\": false,\n      \"privacyLevel\": \"PUBLIC_TO_EVERYONE\",\n      \"isAiGenerated\": false,\n      \"disabledStitch\": false,\n      \"disabledComments\": false,\n      \"isBrandedContent\": false\n    },\n    \"content\": {\n      \"text\": {{ $('Prepare for Publish').item.json.final_text_long.toJsonString() }},\n      \"platform\": \"tiktok\",\n      \"mediaUrls\": [\"{{ $json.url }}\"]\n    },\n    \"accountId\": \"{{ $('Prepare for Publish').item.json.tiktok_id }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3472, -896],
+      "id": "publish-tiktok",
+      "name": "[Tiktok] Publish via Blotato"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "={{ $('Prepare for Publish').item.json.blotato_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"post\": {\n    \"target\": {\n      \"targetType\": \"youtube\",\n      \"title\": \"{{ $('Prepare for Publish').item.json.final_text_short.substring(0, 100) }}\",\n      \"privacyStatus\": \"public\",\n      \"shouldNotifySubscribers\": true\n    },\n    \"content\": {\n      \"text\": {{ $('Prepare for Publish').item.json.final_text_long.toJsonString() }},\n      \"platform\": \"youtube\",\n      \"mediaUrls\": [\"{{ $json.url }}\"]\n    },\n    \"accountId\": \"{{ $('Prepare for Publish').item.json.youtube_id }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-3472, -1280],
+      "id": "publish-youtube",
+      "name": "[Youtube] Publish via Blotato"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-5664, -1104],
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-4400, -1104],
+      "id": "wait-video",
+      "name": "Wait 10min",
+      "webhookId": "83991019-318c-46e2-85d2-6e4bdcd6b69e",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"blotato_api_key\": \"TU_BLOTATO_API_KEY\",\n  \"instagram_id\": \"TU_INSTAGRAM_ID\",\n  \"youtube_id\": \"TU_YOUTUBE_ID\",\n  \"tiktok_id\": \"TU_TIKTOK_ID\",\n  \"facebook_id\": \"TU_FACEBOOK_ID\",\n  \"facebook_page_id\": \"TU_FACEBOOK_PAGE_ID\",\n  \"final_text_long\": {{ $('Prepare Video').item.json.script.caption.toJsonString() }},\n  \"final_text_short\": {{ $('Prepare Video').item.json.script.caption.toJsonString() }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-3920, -1104],
+      "id": "prepare-publish",
+      "name": "Prepare for Publish"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://backend.blotato.com/v2/videos/creations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "={{ $json.blotato_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"template\": {\n    \"id\": \"{{ $json.template }}\",\n    \"voiceId\": \"{{ $json.voiceId }}\",\n    \"captionPosition\": \"{{ $json.captionPosition }}\"\n  },\n  \"script\": {{ $json.script.script.toJsonString() }},\n  \"style\": \"{{ $json.style }}\",\n  \"animateFirstImage\": {{ $json.animate_first_image }},\n  \"animateAll\": {{ $json.animate_all }},\n  \"textToImageModel\": \"{{ $json.text_to_image_model }}\",\n  \"imageToVideoModel\": \"{{ $json.image_to_video_model }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-4608, -1104],
+      "id": "create-video",
+      "name": "Create Video"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [-5488, -768],
+      "id": "brainstorm-gpt",
+      "name": "GPT-4o Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "TU_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"blotato_api_key\": \"TU_BLOTATO_API_KEY\",\n  \"template\": \"empty\",\n  \"voiceId\": \"elevenlabs/eleven_multilingual_v2/JBFqnCBsd6RMkjVDRZzb\",\n  \"captionPosition\": \"bottom\",\n  \"script\": {{ $('DATOS HISTORICOS AI Agent').item.json.output.toJsonString() }},\n  \"style\": \"cinematic\",\n  \"animate_first_image\": true,\n  \"animate_all\": false,\n  \"text_to_image_model\": \"replicate/recraft-ai/recraft-v3\",\n  \"image_to_video_model\": \"fal-ai/framepack\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-4832, -1104],
+      "id": "prepare-video",
+      "name": "Prepare Video"
+    },
+    {
+      "parameters": {
+        "url": "=https://backend.blotato.com/v2/videos/creations/{{ $json.item.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "blotato-api-key",
+              "value": "={{ $('Prepare Video').item.json.blotato_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-4224, -1104],
+      "id": "get-video",
+      "name": "Get Video Status"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "video-ready",
+              "leftValue": "={{ $json.item.status }}",
+              "rightValue": "DONE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-4050, -1104],
+      "id": "check-video-ready",
+      "name": "Video Listo?"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-4050, -900],
+      "id": "wait-retry",
+      "name": "Wait 2min & Retry"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"script\": \"your video script\",\n\t\"caption\": \"short video caption\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [-5264, -912],
+      "id": "output-parser",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Actúa como un sistema de automatización de contenido viral histórico\noptimizado para YouTube Shorts, Facebook Reels e Instagram Reels.\n\nNO ERES UN ASISTENTE.\nERES UN MOTOR DE PRODUCCIÓN.\n\n================================\nCONTEXTO FIJO (NO MODIFICABLE)\n================================\n\nNicho único y exclusivo:\nDatos históricos reales, poco conocidos y emocionalmente impactantes\nsobre personajes históricos que cambiaron el mundo.\n\n================================\nPERSONAJES PERMITIDOS (LOCK)\n================================\n\nSolo puedes generar contenido sobre los siguientes personajes:\n- Nikola Tesla\n- Leonardo da Vinci\n- Martin Luther King Jr.\n- Albert Einstein\n- María Antonieta\n- Napoleón Bonaparte\n- Francisco Pizarro\n- Benito Juárez\n- Francisco de Miranda\n- Emiliano Zapata\n\n================================\nCONSTRUCCIÓN DEL GUION (OBLIGATORIO)\n================================\n\nDuración total: 18–25 segundos\n\nEstructura fija:\n\nHOOK (0–2s)\nFrase de impacto inmediato.\n\nDATO CLAVE (2–10s)\nHecho histórico poco conocido.\nLenguaje simple. Sin fechas exactas.\n\nDECISIÓN HUMANA (10–18s)\nLa elección real que lo cambió todo.\n\nCONSECUENCIA (18–22s)\nImpacto emocional o histórico.\n\nCIERRE + CTA (22–25s)\n\"Historias reales que casi nadie conoce. Suscríbete.\"\n\n================================\nFORMATO DE SALIDA JSON\n================================\n\nDevuelve SIEMPRE en formato JSON exacto:\n\n{\n  \"script\": \"El guión completo unificado (hook + dato + decisión + consecuencia + cta)\",\n  \"caption\": \"Descripción corta para redes sociales con hashtags\"\n}\n\nNO añadas explicaciones. NO añadas saludos. PRODUCE.",
+        "hasOutputParser": true,
+        "options": {
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [-5440, -1056],
+      "id": "ai-agent",
+      "name": "DATOS HISTORICOS AI Agent"
+    },
+    {
+      "parameters": {
+        "content": "## FLUJO CORREGIDO\n\n1. Schedule Trigger (cada 12 horas)\n2. AI Agent genera guion y caption\n3. Prepare Video configura parámetros\n4. Create Video en Blotato\n5. Wait 10 min\n6. Get Video Status\n7. Si no está listo → esperar 2min y reintentar\n8. Si está listo → Prepare for Publish\n9. Upload to Blotato\n10. Publicar en todas las redes",
+        "height": 400,
+        "width": 500,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-5792, -1600],
+      "id": "sticky-info",
+      "name": "Info"
+    }
+  ],
+  "connections": {
+    "Upload to Blotato": {
+      "main": [
+        [
+          { "node": "[Instagram] Publish via Blotato", "type": "main", "index": 0 },
+          { "node": "[Facebook] Publish via Blotato", "type": "main", "index": 0 },
+          { "node": "[Tiktok] Publish via Blotato", "type": "main", "index": 0 },
+          { "node": "[Youtube] Publish via Blotato", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [{ "node": "DATOS HISTORICOS AI Agent", "type": "main", "index": 0 }]
+      ]
+    },
+    "Wait 10min": {
+      "main": [
+        [{ "node": "Get Video Status", "type": "main", "index": 0 }]
+      ]
+    },
+    "Prepare for Publish": {
+      "main": [
+        [{ "node": "Upload to Blotato", "type": "main", "index": 0 }]
+      ]
+    },
+    "Create Video": {
+      "main": [
+        [{ "node": "Wait 10min", "type": "main", "index": 0 }]
+      ]
+    },
+    "GPT-4o Model": {
+      "ai_languageModel": [
+        [{ "node": "DATOS HISTORICOS AI Agent", "type": "ai_languageModel", "index": 0 }]
+      ]
+    },
+    "Prepare Video": {
+      "main": [
+        [{ "node": "Create Video", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Video Status": {
+      "main": [
+        [{ "node": "Video Listo?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Video Listo?": {
+      "main": [
+        [{ "node": "Prepare for Publish", "type": "main", "index": 0 }],
+        [{ "node": "Wait 2min & Retry", "type": "main", "index": 0 }]
+      ]
+    },
+    "Wait 2min & Retry": {
+      "main": [
+        [{ "node": "Get Video Status", "type": "main", "index": 0 }]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [{ "node": "DATOS HISTORICOS AI Agent", "type": "ai_outputParser", "index": 0 }]
+      ]
+    },
+    "DATOS HISTORICOS AI Agent": {
+      "main": [
+        [{ "node": "Prepare Video", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

@@ -1,0 +1,272 @@
+{
+  "name": "VeaIA - Automatización Completa (Sin Blotato)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-600, 0],
+      "id": "schedule-trigger",
+      "name": "Cada 12 horas"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"veaia_base_url\": \"https://TU-DOMINIO.netlify.app\",\n  \"veaia_api_key\": \"TU_VEAIA_API_KEY\",\n  \"topic\": \"Un dato histórico poco conocido sobre Nikola Tesla que cambió el mundo\",\n  \"voice_id\": \"es-ES-AlvaroNeural\",\n  \"style\": \"cinematic\",\n  \"background_url\": \"https://database.blotato.io/storage/v1/object/public/public_media/4ddd33eb-e811-4ab5-93e1-2cd0b7e8fb3f/videogen2-render-e6b398a2-5859-4a77-88ef-2345bcefdc98.mp4\",\n  \"background_type\": \"video\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-400, 0],
+      "id": "config",
+      "name": "Configuracion"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Configuracion').item.json.veaia_base_url }}/api/v1/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $('Configuracion').item.json.veaia_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"topic\": \"{{ $('Configuracion').item.json.topic }}\",\n  \"audience_type\": \"creador\",\n  \"region\": \"LATAM\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-200, 0],
+      "id": "veaia-generate",
+      "name": "VeaIA - Generar Contenido"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Configuracion').item.json.veaia_base_url }}/api/v1/video-faceless",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $('Configuracion').item.json.veaia_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"create\",\n  \"script\": {{ $('VeaIA - Generar Contenido').item.json.data.script.toJsonString() }},\n  \"voice_id\": \"{{ $('Configuracion').item.json.voice_id }}\",\n  \"style\": \"{{ $('Configuracion').item.json.style }}\",\n  \"background_url\": \"{{ $('Configuracion').item.json.background_url }}\",\n  \"background_type\": \"{{ $('Configuracion').item.json.background_type }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [0, 0],
+      "id": "veaia-video-faceless",
+      "name": "VeaIA - Crear Video Faceless"
+    },
+    {
+      "parameters": {
+        "amount": 5,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [200, 0],
+      "id": "wait-video",
+      "name": "Esperar 5 min"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Configuracion').item.json.veaia_base_url }}/api/v1/get-video",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $('Configuracion').item.json.veaia_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_id\": \"{{ $('VeaIA - Crear Video Faceless').item.json.heygen_video_id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [400, 0],
+      "id": "veaia-video-status",
+      "name": "VeaIA - Estado del Video"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "video-done",
+              "leftValue": "={{ $json.ready_to_publish }}",
+              "rightValue": true,
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [600, 0],
+      "id": "check-video-status",
+      "name": "Video Listo?"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [600, 200],
+      "id": "wait-retry",
+      "name": "Esperar y Reintentar"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Configuracion').item.json.veaia_base_url }}/api/v1/automation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $('Configuracion').item.json.veaia_api_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"publish_multi\",\n  \"platforms\": [\"youtube\", \"instagram\", \"tiktok\", \"facebook\"],\n  \"content\": {\n    \"text\": {{ $('VeaIA - Generar Contenido').item.json.data.caption.toJsonString() }},\n    \"title\": {{ $('VeaIA - Generar Contenido').item.json.data.title.toJsonString() }}\n  },\n  \"options\": {\n    \"mediaUrl\": \"{{ $('VeaIA - Estado del Video').item.json.video.video_url }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [800, 0],
+      "id": "veaia-publish",
+      "name": "VeaIA - Publicar en Todas las Redes"
+    },
+    {
+      "parameters": {
+        "content": "# WORKFLOW VeaIA COMPLETO\n## 100% Sin Blotato\n\n### Flujo:\n1. **Configuracion** - API keys y parámetros\n2. **VeaIA - Generar Contenido** - `/api/v1/generate`\n3. **VeaIA - Crear Video Faceless** - `/api/v1/video-faceless`\n4. **Esperar 5 min** - Procesamiento\n5. **VeaIA - Estado del Video** - Verificar\n6. **Video Listo?** - Condición\n7. **VeaIA - Publicar** - `/api/v1/automation`\n\n### APIs VeaIA utilizadas:\n- `/api/v1/generate`\n- `/api/v1/video-faceless`\n- `/api/v1/automation`\n\n### Configurar:\n1. `veaia_base_url` - Tu URL de Netlify\n2. `veaia_api_key` - Tu API key\n3. `topic` - Tema del contenido\n4. `voice_id` - Voz para el video\n5. `style` - Estilo visual",
+        "height": 500,
+        "width": 350,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-650, -450],
+      "id": "sticky-info",
+      "name": "Info"
+    },
+    {
+      "parameters": {
+        "content": "## SIN DEPENDENCIAS EXTERNAS\n\nEste workflow usa SOLO APIs de VeaIA.\nNo requiere Blotato ni otros servicios.",
+        "height": 120,
+        "width": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-250, -200],
+      "id": "sticky-note",
+      "name": "Note"
+    }
+  ],
+  "connections": {
+    "Cada 12 horas": {
+      "main": [
+        [{ "node": "Configuracion", "type": "main", "index": 0 }]
+      ]
+    },
+    "Configuracion": {
+      "main": [
+        [{ "node": "VeaIA - Generar Contenido", "type": "main", "index": 0 }]
+      ]
+    },
+    "VeaIA - Generar Contenido": {
+      "main": [
+        [{ "node": "VeaIA - Crear Video Faceless", "type": "main", "index": 0 }]
+      ]
+    },
+    "VeaIA - Crear Video Faceless": {
+      "main": [
+        [{ "node": "Esperar 5 min", "type": "main", "index": 0 }]
+      ]
+    },
+    "Esperar 5 min": {
+      "main": [
+        [{ "node": "VeaIA - Estado del Video", "type": "main", "index": 0 }]
+      ]
+    },
+    "VeaIA - Estado del Video": {
+      "main": [
+        [{ "node": "Video Listo?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Video Listo?": {
+      "main": [
+        [{ "node": "VeaIA - Publicar en Todas las Redes", "type": "main", "index": 0 }],
+        [{ "node": "Esperar y Reintentar", "type": "main", "index": 0 }]
+      ]
+    },
+    "Esperar y Reintentar": {
+      "main": [
+        [{ "node": "VeaIA - Estado del Video", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

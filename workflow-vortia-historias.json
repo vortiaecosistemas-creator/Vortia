@@ -1,0 +1,163 @@
+{
+  "name": "VORTIA - Canal Historias Faceless",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"field": "hours", "hoursInterval": 12}]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vortiaecosistemasagentesia.com/api/v1/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-api-key", "value": "vortia_sk_9ef2a03c043bab140af6f72e90118d8b7d395b3c1661e813"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"type\": \"script\",\n  \"prompt\": \"Genera un guion viral de 30 segundos sobre un dato histórico poco conocido de Nikola Tesla, Leonardo da Vinci, o Einstein. Hook impactante, decisión humana, consecuencia emocional.\",\n  \"platform\": \"youtube\"\n}",
+        "options": {}
+      },
+      "name": "Generar Script (VORTIA)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [420, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vortiaecosistemasagentesia.com/api/v1/heygen",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-api-key", "value": "vortia_sk_9ef2a03c043bab140af6f72e90118d8b7d395b3c1661e813"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"create_video\",\n  \"script\": {{ $json.data.script }},\n  \"background_url\": \"https://database.blotato.io/storage/v1/object/public/public_media/4ddd33eb-e811-4ab5-93e1-2cd0b7e8fb3f/videogen2-render-e6b398a2-5859-4a77-88ef-2345bcefdc98.mp4\",\n  \"background_type\": \"video\"\n}",
+        "options": {}
+      },
+      "name": "Crear Video (VORTIA)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [640, 400]
+    },
+    {
+      "parameters": {
+        "amount": 90,
+        "unit": "seconds"
+      },
+      "name": "Esperar Video",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [860, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vortiaecosistemasagentesia.com/api/v1/heygen",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-api-key", "value": "vortia_sk_9ef2a03c043bab140af6f72e90118d8b7d395b3c1661e813"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"check_status\",\n  \"video_id\": \"{{ $('Crear Video (VORTIA)').item.json.video.videoId }}\"\n}",
+        "options": {}
+      },
+      "name": "Verificar Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [{"value1": "={{ $json.video.status }}", "value2": "completed"}]
+        }
+      },
+      "name": "Video Listo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1300, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vortiaecosistemasagentesia.com/api/v1/automation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-api-key", "value": "vortia_sk_9ef2a03c043bab140af6f72e90118d8b7d395b3c1661e813"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"publish_now\",\n  \"platform\": \"youtube\",\n  \"content\": {\n    \"text\": \"{{ $('Generar Script (VORTIA)').item.json.data.caption }}\",\n    \"title\": \"{{ $('Generar Script (VORTIA)').item.json.data.title }}\"\n  },\n  \"options\": {\n    \"mediaUrl\": \"{{ $json.video.videoUrl }}\"\n  }\n}",
+        "options": {}
+      },
+      "name": "Publicar YouTube",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1520, 280]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vortiaecosistemasagentesia.com/api/v1/automation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-api-key", "value": "vortia_sk_9ef2a03c043bab140af6f72e90118d8b7d395b3c1661e813"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"publish_now\",\n  \"platform\": \"instagram\",\n  \"content\": {\n    \"text\": \"{{ $('Generar Script (VORTIA)').item.json.data.caption }}\"\n  },\n  \"options\": {\n    \"mediaUrl\": \"{{ $json.video.videoUrl }}\"\n  }\n}",
+        "options": {}
+      },
+      "name": "Publicar Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1520, 480]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "name": "Esperar Reintento",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1520, 680]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {"main": [[{"node": "Generar Script (VORTIA)", "type": "main", "index": 0}]]},
+    "Generar Script (VORTIA)": {"main": [[{"node": "Crear Video (VORTIA)", "type": "main", "index": 0}]]},
+    "Crear Video (VORTIA)": {"main": [[{"node": "Esperar Video", "type": "main", "index": 0}]]},
+    "Esperar Video": {"main": [[{"node": "Verificar Video", "type": "main", "index": 0}]]},
+    "Verificar Video": {"main": [[{"node": "Video Listo?", "type": "main", "index": 0}]]},
+    "Video Listo?": {"main": [[{"node": "Publicar YouTube", "type": "main", "index": 0}, {"node": "Publicar Instagram", "type": "main", "index": 0}], [{"node": "Esperar Reintento", "type": "main", "index": 0}]]},
+    "Esperar Reintento": {"main": [[{"node": "Verificar Video", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {"executionOrder": "v1"}
+}
