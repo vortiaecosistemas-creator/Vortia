@@ -1,13 +1,8 @@
-[images]
-  remote_images = ["https://source.unsplash.com/.*", "https://images.unsplash.com/.*", "https://ext.same-assets.com/.*", "https://ugc.same-assets.com/.*"]
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/next"
+  status = 200
 
 [build]
-  base = "."
-  command = "npm install --legacy-peer-deps && npm run build"
+  command = "npm run build"
   publish = ".next"
-
-[build.environment]
-  NODE_VERSION = "20"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
