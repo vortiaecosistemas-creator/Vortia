@@ -1,0 +1,96 @@
+{
+  "name": "Academia Vortia - Lead Capture & GHL Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-capture-vortia",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [-200, 0],
+      "id": "webhook-lead",
+      "name": "Web - Formulario Cursos"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-name",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "set-email",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [0, 0],
+      "id": "set-data",
+      "name": "Configuracion Lead"
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "email": "={{ $json.email }}",
+        "additionalFields": {
+          "firstName": "={{ $json.name }}",
+          "tags": ["Lead_Academia_IA"]
+        }
+      },
+      "type": "n8n-nodes-base.goHighLevel",
+      "typeVersion": 1,
+      "position": [200, 0],
+      "id": "ghl-sync",
+      "name": "GHL - Sincronizar Contacto"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "TU_ENDPOINT_EMAIL_SERVICE",
+        "sendBody": true,
+        "jsonBody": "={\n  \"to\": \"{{ $json.email }}\",\n  \"subject\": \"Tu Blueprint de Agentes Autónomos está aquí 🚀\",\n  \"content\": \"Hola {{ $json.name }}, aquí tienes el acceso...\"\n}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [400, 0],
+      "id": "send-pdf",
+      "name": "Email - Enviar Blueprint"
+    }
+  ],
+  "connections": {
+    "Web - Formulario Cursos": {
+      "main": [
+        [{ "node": "Configuracion Lead", "type": "main", "index": 0 }]
+      ]
+    },
+    "Configuracion Lead": {
+      "main": [
+        [{ "node": "GHL - Sincronizar Contacto", "type": "main", "index": 0 }]
+      ]
+    },
+    "GHL - Sincronizar Contacto": {
+      "main": [
+        [{ "node": "Email - Enviar Blueprint", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

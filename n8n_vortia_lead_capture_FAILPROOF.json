@@ -1,0 +1,70 @@
+{
+  "name": "Academia Vortia - Lead Capture FAILPROOF",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-capture-vortia",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [-380, 240],
+      "id": "webhook-lead",
+      "name": "Web - Formulario Cursos"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-1c98081d-f671-44dc-a7f6-b0446edb53f3"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"firstName\": \"{{ $json.body.name }}\",\n  \"email\": \"{{ $json.body.email }}\",\n  \"locationId\": \"Y6IVqUDYaFpSEq4MFY79\",\n  \"tags\": [\"Lead_Academia_IA\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [-160, 240],
+      "id": "ghl-http-request",
+      "name": "GHL - Crear Contacto Directo"
+    }
+  ],
+  "connections": {
+    "Web - Formulario Cursos": {
+      "main": [
+        [
+          {
+            "node": "GHL - Crear Contacto Directo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
