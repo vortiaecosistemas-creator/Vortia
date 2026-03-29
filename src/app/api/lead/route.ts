@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const WEBHOOK_URL = "https://demo-n8n.0ogwot.easypanel.host/webhook-test/lead-capture-vortia";
+  const WEBHOOK_URL = "https://demo-n8n.0ogwot.easypanel.host/webhook/lead-capture-vortia";
 
   try {
     const body = await request.json();
