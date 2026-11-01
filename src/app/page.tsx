@@ -28,13 +28,13 @@ const PROYECTOS = [
   {
     sector: "Concesionarios",
     nombre: "CarBot",
-    estado: "Demo funcional",
+    estado: "Proyecto creado",
     d: "Equipo de tres agentes de venta: uno conversa con el cliente, otro consulta el stock real y otro aplica las reglas del negocio (descuentos, financiación y prioridades).",
   },
   {
     sector: "Restauración",
     nombre: "FoodOS",
-    estado: "En marcha en un restaurante",
+    estado: "Proyecto creado",
     d: "Web de pedidos con la marca del restaurante, pago, zonas de reparto, panel de cocina con ticket impreso y panel de administración.",
   },
   {
