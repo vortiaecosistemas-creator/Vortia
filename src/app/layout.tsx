@@ -27,8 +27,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vortia | Ecosistemas de Agentes IA & Academia",
-  description: "Diseñamos y desplegamos ecosistemas de agentes IA para agencias y SaaS. Aprende la nueva era de la IA Agéntica.",
+  title: "VeaIA | Ecosistemas de agentes de IA para cualquier negocio",
+  description: "Creamos plataformas y agentes de IA a medida para empresas, servicios y productos: construcción (Clara Obra), concesionarios, restauración e inmobiliarias.",
 };
 
 export default function RootLayout({
